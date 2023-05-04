@@ -45,6 +45,7 @@ def process_file_image(file_path, dest_path):
     new_name = translate(name) + ext
     dest_file = dest_dir / new_name
     shutil.copy(file_path, dest_file)
+    file_path.unlink()
 
 
 def process_file_videos(file_path, dest_path):
@@ -54,6 +55,7 @@ def process_file_videos(file_path, dest_path):
     new_name = translate(name) + ext
     dest_file = dest_dir / new_name
     shutil.copy(file_path, dest_file)
+    file_path.unlink()
 
 def process_file_documents(file_path, dest_path):
     dest_dir = Path(dest_path)
@@ -62,6 +64,7 @@ def process_file_documents(file_path, dest_path):
     new_name = translate(name) + ext
     dest_file = dest_dir / new_name
     shutil.copy(file_path, dest_file)
+    file_path.unlink()
 
 def process_file_audio(file_path, dest_path):
     dest_dir = Path(dest_path)
@@ -69,7 +72,8 @@ def process_file_audio(file_path, dest_path):
     name, ext = file_path.stem, file_path.suffix.lower()
     new_name = translate(name) + ext
     dest_file = dest_dir / new_name
-    shutil.copy(file_path, dest_file)  
+    shutil.copy(file_path, dest_file)
+    file_path.unlink()  
 
 def process_file_archives(file_path, dest_path):
     dest_dir = Path(dest_path) # створюємо об'єкт `Path` -->folder / "archives" --> /desktop/hlam/archives
@@ -79,7 +83,9 @@ def process_file_archives(file_path, dest_path):
     new_file_path = dest_dir / file_path.name # шлях архів в нову папку
     shutil.copy(file_path, new_file_path) # копіюємо архів в нову папку /desktop/hlam/archives/nazva_arhiva
     shutil.unpack_archive(new_file_path, dest_file)  # розпаковка 
-    new_file_path.unlink() # видаляєм архів
+    new_file_path.unlink()
+    file_path.unlink()
+     # видаляєм архів
 
     # тут походу треба ще весь вміст архіва нормалізувать назви??
     # тіпа пройтись ще циклом, бля.....
@@ -135,7 +141,7 @@ if __name__ == "__main__":
     folder = Path(sys.argv[1])
     
     dest_folders = {
-    	"images": folder / "images",
+    	 "images": folder / "images",
          "documents": folder / "documents",
          "audio": folder / "audio",
          "video": folder / "video",
@@ -147,7 +153,7 @@ if __name__ == "__main__":
 
 	# тут робим пошук всіх файлів
     all_files = find_files(folder, exclude_folders)
-	# далі з all_files будемо виводить список файлів які були в заданій папкі
+	# далі з all_files будемо виводить список файлів які були в заданій папці
     
     # print("="*10)
     # print(f"dir: {folder}")
@@ -191,13 +197,12 @@ if __name__ == "__main__":
     for name, folder_path in dest_folders.items():
         files_in_folders[name] = find_files(folder_path, [])
     
-    # тепер є список файлів в кожній папкі files_in_folders, можна вивести в консоль
+    # тепер є список файлів в кожній папці files_in_folders, можна вивести в консоль
     # ...
     
     # тут можна запустити рекурсивну функцію яка буде видаляти пусті папки
     delete_empty_folders(folder)
     
-    # ну і щось ще що забули)
 
     print(f"files in folders= {files_in_folders}")
     print("="*10)
