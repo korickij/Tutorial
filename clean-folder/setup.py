@@ -8,5 +8,7 @@ setup(
     author='Ivan Korickij',
     author_email='kitmobi@gmail.com',
     license='GoIT',
-    packages=find_namespace_packages()
+    install_requires=["pathlib", "shutil"],
+    packages=find_namespace_packages(),
+    entry_points={'console_scripts': ['clean_folder = clean_folder.clean']}
 )
