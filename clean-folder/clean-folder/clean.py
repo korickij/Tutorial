@@ -136,24 +136,26 @@ def delete_empty_folders(folder):
 
     
     
-if __name__ == "__main__":  
-    
+
+
+def main():
+
     folder = Path(sys.argv[1])
     
     dest_folders = {
-    	 "images": folder / "images",
-         "documents": folder / "documents",
-         "audio": folder / "audio",
-         "video": folder / "video",
-         "archives": folder / "archives",
+        "images": folder / "images",
+        "documents": folder / "documents",
+        "audio": folder / "audio",
+        "video": folder / "video",
+        "archives": folder / "archives",
     }
-	# генерим список папок що будемо пропускати на основі dest_folders
+    # генерим список папок що будемо пропускати на основі dest_folders
     exclude_folders = list(dest_folders.values())
 
 
-	# тут робим пошук всіх файлів
+    # тут робим пошук всіх файлів
     all_files = find_files(folder, exclude_folders)
-	# далі з all_files будемо виводить список файлів які були в заданій папці
+    # далі з all_files будемо виводить список файлів які були в заданій папці
     
     # print("="*10)
     # print(f"dir: {folder}")
@@ -191,7 +193,7 @@ if __name__ == "__main__":
             unknown_extensions.add(extension)
             #process_file_unknown(file_path)
         #print("-"*10)
-     
+    
     files_in_folders = {}
     # далі можна пройтись по dest_folders і вив
     for name, folder_path in dest_folders.items():
@@ -210,3 +212,5 @@ if __name__ == "__main__":
     print("="*10)
     print(f"unknown_extensions={unknown_extensions}")
 
+if __name__ == "__main__":
+    main()
