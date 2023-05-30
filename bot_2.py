@@ -46,18 +46,23 @@ def show_all_func(saved_nama_phone):
 @decorator_error       
 def parser(user_input, saved_nama_phone):
     if user_input == "hello":
-            print (hello_func())
+        return hello_func()
+            # print (hello_func())
     elif user_input.startswith("add"):
         ad, name, phone = user_input.split(" ")
-        print(add_func(name, phone, saved_nama_phone))
+        # print(add_func(name, phone, saved_nama_phone))
+        return add_func(name, phone, saved_nama_phone)
     elif user_input.startswith("change"):
         ad, name, phone = user_input.split(" ")
-        print(change_func(name, phone, saved_nama_phone))
+        # print(change_func(name, phone, saved_nama_phone))
+        return change_func(name, phone, saved_nama_phone)
     elif user_input.startswith("phone"):
         ad,name = user_input.split(" ")
-        print(phone_func(name, saved_nama_phone))
+        # print(phone_func(name, saved_nama_phone))
+        return phone_func(name, saved_nama_phone)
     elif user_input == "show all":
-        print (saved_nama_phone)
+        # print (saved_nama_phone)
+        return saved_nama_phone
                 
 def main():
     
