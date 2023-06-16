@@ -1,6 +1,12 @@
 from collections import UserDict
+from datetime import datetime, timedelta
+
 
 class AddressBook(UserDict):
+    # def __inti__(self, n):
+    #     super().__init__()
+    #     self.n = n
+    N = 5
     
     def add_record(self, record):
         self.data[record.name.value] = record
@@ -11,6 +17,31 @@ class AddressBook(UserDict):
             return "Contact deleted successfully"
         else:
             raise ValueError("Key not found")
+    #-----------domaska_11 AddressBook реализует метод iterator-----------------
+    # def __iter__(self):
+    #     self.current = 0
+    #     self.keys = list(self.data.keys())
+    #     return self
+    
+    # def __next__(self):
+    #     if self.current >= len(self.keys):
+    #         raise StopIteration
+    #     start = self.current
+    #     end = end = start + self.n if start + self.n <= len(self._keys) else len(self._keys)
+    #     self.current = end
+    #     return [self.data[key] for key in self.keys[start:end]]
+    def iterator(self, n=None):
+        n = n or self.N
+        output = []
+        for k in self:
+            output.append(str(self[k]))
+            if len(output) >= n:
+                yield "\n".join(output)
+                output = []
+
+        yield "\n".join(output)
+        
+    #-----------domaska_11 AddressBook реализует метод iterator-----------------
 
 
 class Field:
@@ -22,19 +53,48 @@ class Field:
     def __repr__(self) -> str:
         return f"{type(self).__name__}({self.value})"
 
+#-----------domaska_11 Добавим поле для дня рождения Birthday
+class Birthday(Field):
+    def __init__(self, value):
+        pass
+
+    def validator(self, value):
+        try:
+            datetime.strptime(self.value, "%d-%m-%Y")
+        except ValueError:
+            raise ValueError("Invalid birthday format. Use dd-mm-yyyy")
+        return value
+
+    def days_to_birthday(self):
+        today = datetime.now().date() #просто дата без минут секунд і мікросекунд
+        birthday = datetime.strftime(self.value, "%d-%m-%Y").replace(year=today.year)
+        return (birthday - today).days
+
+#-----------domaska_11 Добавим поле для дня рождения Birthday
+
 class Name(Field):
     pass
 
+#-----------domaska_11 добавим функционал проверки на правильность приведенных значений для полей Phone
 class Phone(Field):
-    pass
+    def __init__(self, value):
+        pass
 
+    def validator(self, value):
+        
+        if not isinstance(value, str) or len(value) != 10 or not value.isdigit():
+            raise ValueError("Invalid phone number")
+        return value
+
+#-----------domaska_11 добавим функционал проверки на правильность приведенных значений для полей Phone
 class Record:
     name = None
     phones = None
 
-    def __init__(self, name, phones = None) -> None:
+    def __init__(self, name, phones = None, birthday=None) -> None:
         self.name = name
         self.phones = phones if phones else []
+        self.birthday = Birthday(birthday) if birthday else None #-----------domaska_11 добавив необовязкове поле, хз чи ок
 
     def add_phone(self, phone):
         self.phones.append(phone)
@@ -48,7 +108,7 @@ class Record:
                 return True
         
         raise ValueError("Old phone not found")
-    
+
     # def remove_item(self, name, saved_nama_phone):
     #     del saved_nama_phone[name]
     #     raise ValueError("Old phone not found")
@@ -110,6 +170,7 @@ def change_func(name, old_phone, new_phone, saved_nama_phone):
 @decorator_error    
 def remove_func(name, saved_nama_phone):
     record = saved_nama_phone[name]
+    print ("To sho v record" ,record)
     if record is None:
          raise KeyError("No")
     result = saved_nama_phone.remove_item(name)
@@ -117,10 +178,6 @@ def remove_func(name, saved_nama_phone):
         return "Contact del successfully"
     
     return "Contact not del"
-    # if name in saved_nama_phone:
-    #     del saved_nama_phone[name]
-    # else:
-    #     raise KeyError("Key not found")
 
 @decorator_error
 def phone_func(name, saved_nama_phone):
@@ -131,13 +188,17 @@ def phone_func(name, saved_nama_phone):
 
 @decorator_error
 def show_all_func(saved_nama_phone):
-    if not saved_nama_phone:
-        return "slovnuk porozhnij"
-    else:
-        res = ""
-        for name, phone in saved_nama_phone.items():
-            res += (f"{name}:{phone}\n")
-        return res
+    iterator = AddressBook(n)
+
+    for i in iterator:
+        print(i)
+    # if not saved_nama_phone:
+    #     return "slovnuk porozhnij"
+    # else:
+    #     res = ""
+    #     for name, phone in saved_nama_phone.items():
+    #         res += (f"{name}:{phone}\n")
+    #     return res
 
                 
 @decorator_error       
@@ -162,10 +223,12 @@ def parser(user_input, saved_nama_phone):
         return phone_func(name, saved_nama_phone)
     elif user_input == "show all":
         # print (saved_nama_phone)
-        return saved_nama_phone
+        # return saved_nama_phone
+        out = [r for r in saved_nama_phone.iterator()]
+        return "\n".join(out)
                 
 def main():
-    
+    # n = 5
     # saved_nama_phone = {}
     saved_nama_phone = AddressBook()
 
