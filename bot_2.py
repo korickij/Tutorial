@@ -94,8 +94,7 @@ class Record:
     def __init__(self, name, phones = None, birthday=None) -> None:
         self.name = name
         self.phones = phones if phones else []
-        self.birthday = Birthday(birthday) if birthday else None #-----------domaska_11 добавив необовязкове поле, хз чи ок
-
+        self.birthday = Birthday(birthday) if birthday else None #-----------domaska_11 добавив необовязкове поле
     def add_phone(self, phone):
         self.phones.append(phone)
 
