@@ -56,19 +56,25 @@ class Field:
 #-----------domaska_11 Добавим поле для дня рождения Birthday
 class Birthday(Field):
     def __init__(self, value):
-        pass
+        self._value = None
+        self.value = value  
+    @property
+    def value(self):
+        return self._value
 
-    def validator(self, value):
+    @value.setter
+    def value(self, new_value):
         try:
-            datetime.strptime(self.value, "%d-%m-%Y")
+            datetime.strptime(new_value, "%d-%m-%Y")
         except ValueError:
             raise ValueError("Invalid birthday format. Use dd-mm-yyyy")
-        return value
+        self._value = new_value
 
     def days_to_birthday(self):
-        today = datetime.now().date() #просто дата без минут секунд і мікросекунд
-        birthday = datetime.strftime(self.value, "%d-%m-%Y").replace(year=today.year)
+        today = datetime.now().date()
+        birthday = datetime.strptime(self._value, "%d-%m-%Y").replace(year=today.year)
         return (birthday - today).days
+
 
 #-----------domaska_11 Добавим поле для дня рождения Birthday
 
@@ -78,13 +84,24 @@ class Name(Field):
 #-----------domaska_11 добавим функционал проверки на правильность приведенных значений для полей Phone
 class Phone(Field):
     def __init__(self, value):
-        pass
+        self.__value = None
 
-    def validator(self, value):
-        
-        if not isinstance(value, str) or len(value) != 10 or not value.isdigit():
+    @property
+    def value(self):
+        return self.__value
+    
+    @value.setter
+    def value(self, new_value):
+        if not isinstance(new_value, str) or len(new_value) != 10 or not new_value.isdigit():
             raise ValueError("Invalid phone number")
-        return value
+        else:
+            self.__value = new_value
+
+    # def validator(self, value):
+        
+    #     if not isinstance(value, str) or len(value) != 10 or not value.isdigit():
+    #         raise ValueError("Invalid phone number")
+    #     return value
 
 #-----------domaska_11 добавим функционал проверки на правильность приведенных значений для полей Phone
 class Record:
