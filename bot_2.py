@@ -56,23 +56,23 @@ class Field:
 #-----------domaska_11 Добавим поле для дня рождения Birthday
 class Birthday(Field):
     def __init__(self, value):
-        self._value = None
+        self.__value = None
         self.value = value  
     @property
     def value(self):
-        return self._value
+        return self.__value
 
     @value.setter
     def value(self, new_value):
         try:
-            datetime.strptime(new_value, "%d-%m-%Y")
+            datetime.strptime(new__value, "%d-%m-%Y")
         except ValueError:
             raise ValueError("Invalid birthday format. Use dd-mm-yyyy")
-        self._value = new_value
+        self.__value = new_value
 
     def days_to_birthday(self):
         today = datetime.now().date()
-        birthday = datetime.strptime(self._value, "%d-%m-%Y").replace(year=today.year)
+        birthday = datetime.strptime(self.__value, "%d-%m-%Y").replace(year=today.year)
         return (birthday - today).days
 
 
