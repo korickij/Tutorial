@@ -1,11 +1,10 @@
 from collections import UserDict
 from datetime import datetime, timedelta
+import pickle
 
 
 class AddressBook(UserDict):
-    # def __inti__(self, n):
-    #     super().__init__()
-    #     self.n = n
+
     N = 5
     
     def add_record(self, record):
@@ -18,18 +17,7 @@ class AddressBook(UserDict):
         else:
             raise ValueError("Key not found")
     #-----------domaska_11 AddressBook реализует метод iterator-----------------
-    # def __iter__(self):
-    #     self.current = 0
-    #     self.keys = list(self.data.keys())
-    #     return self
-    
-    # def __next__(self):
-    #     if self.current >= len(self.keys):
-    #         raise StopIteration
-    #     start = self.current
-    #     end = end = start + self.n if start + self.n <= len(self._keys) else len(self._keys)
-    #     self.current = end
-    #     return [self.data[key] for key in self.keys[start:end]]
+
     def iterator(self, n=None):
         n = n or self.N
         output = []
@@ -42,8 +30,15 @@ class AddressBook(UserDict):
         yield "\n".join(output)
         
     #-----------domaska_11 AddressBook реализует метод iterator-----------------
-
-
+    #-----------domaska_12
+    def save_to_file(self, filename):
+        with open(filename, "wb") as file:
+            pickle.dump(self.data, file)
+    
+    def load_from_file(self, filename):
+        with open(filename, "rb") as file:
+            self.data = pickle.load(file)
+    #-----------domaska_12
 class Field:
     value = None
 
@@ -65,7 +60,7 @@ class Birthday(Field):
     @value.setter
     def value(self, new_value):
         try:
-            datetime.strptime(new__value, "%d-%m-%Y")
+            datetime.strptime(new_value, "%d-%m-%Y")
         except ValueError:
             raise ValueError("Invalid birthday format. Use dd-mm-yyyy")
         self.__value = new_value
@@ -84,7 +79,7 @@ class Name(Field):
 #-----------domaska_11 добавим функционал проверки на правильность приведенных значений для полей Phone
 class Phone(Field):
     def __init__(self, value):
-        self.__value = None
+        self.__value = value
 
     @property
     def value(self):
@@ -92,16 +87,11 @@ class Phone(Field):
     
     @value.setter
     def value(self, new_value):
-        if not isinstance(new_value, str) or len(new_value) != 10 or not new_value.isdigit():
-            raise ValueError("Invalid phone number")
-        else:
-            self.__value = new_value
-
-    # def validator(self, value):
-        
-    #     if not isinstance(value, str) or len(value) != 10 or not value.isdigit():
-    #         raise ValueError("Invalid phone number")
-    #     return value
+        self.__value = new_value
+        # if not isinstance(new_value, str) or len(new_value) != 10 or not new_value.isdigit():
+        #     raise ValueError("Invalid phone number")
+        # else:
+        #     self.__value = new_value
 
 #-----------domaska_11 добавим функционал проверки на правильность приведенных значений для полей Phone
 class Record:
@@ -124,10 +114,6 @@ class Record:
                 return True
         
         raise ValueError("Old phone not found")
-
-    # def remove_item(self, name, saved_nama_phone):
-    #     del saved_nama_phone[name]
-    #     raise ValueError("Old phone not found")
 
     
     def __repr__(self) -> str:
@@ -208,14 +194,19 @@ def show_all_func(saved_nama_phone):
 
     for i in iterator:
         print(i)
-    # if not saved_nama_phone:
-    #     return "slovnuk porozhnij"
-    # else:
-    #     res = ""
-    #     for name, phone in saved_nama_phone.items():
-    #         res += (f"{name}:{phone}\n")
-    #     return res
 
+@decorator_error
+def search_func(keyword, saved_nama_phone):
+    results = []
+
+    for record in saved_nama_phone.values():
+        name = record.name.value
+        phones = [phone.value for phone in record.phones]
+
+        if keyword in name or any(keyword in phone for phone in phones):
+            results.append(record)
+
+    return results
                 
 @decorator_error       
 def parser(user_input, saved_nama_phone):
@@ -242,6 +233,12 @@ def parser(user_input, saved_nama_phone):
         # return saved_nama_phone
         out = [r for r in saved_nama_phone.iterator()]
         return "\n".join(out)
+    #------------domashka 12 - пошук по буквах цифрах і тд
+    elif user_input.startswith("search"):
+        ad,keyword = user_input.split(" ")
+        
+        return search_func(keyword, saved_nama_phone)
+    #------------domashka 12 - пошук по буквах цифрах і тд
                 
 def main():
     # n = 5
@@ -254,6 +251,16 @@ def main():
         if user_input=="good bye" or user_input=="close" or user_input=="exit":
             print ("Good bye!")
             break
+        if user_input == "save":
+            saved_nama_phone.save_to_file(filename)
+            print("Address book saved to file.")
+            continue
+        
+        if user_input == "load":
+            saved_nama_phone.load_from_file(filename)
+            print("Address book loaded from file.")
+            continue
+
         res = parser(user_input, saved_nama_phone)
         print(res)
 
